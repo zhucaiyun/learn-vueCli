@@ -4,7 +4,7 @@ const { processSlotOutlet } = require("@vue/compiler-core");
  * @Author       : zhucaiyun1@xdf.cn
  * @Date         : 2021-11-23 14:44:59
  * @LastEditors  : zhucaiyun1@xdf.cn
- * @LastEditTime : 2021-11-24 18:16:03
+ * @LastEditTime : 2021-12-03 15:32:38
  * @Description  : vue-cli配置文件
  */
 module.exports = {
@@ -16,14 +16,12 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV !== 'production',
   runtimeCompiler: true, // what is this
   transpileDependencies: [], //babel-loader显示转译一个依赖 node_modules
-  productionSourceMap: false, // 生产环境生成source map 可以将其设置为false 以加速生产环境构建： source map(http://www.ruanyifeng.com/blog/2013/01/javascript_source_map.html) 1、sourcemap是一个信息文件，包含转换后的代码对应的转换前代码的位置，一般用于错误追踪。
+  productionSourceMap: true, // 生产环境生成source map 可以将其设置为false 以加速生产环境构建： source map(http://www.ruanyifeng.com/blog/2013/01/javascript_source_map.html) 1、sourcemap是一个信息文件，包含转换后的代码对应的转换前代码的位置，一般用于错误追踪。
   crossorigin: 'anonymous', // what is this ''|'anonymous'|'use-credentials'|undefined 只影响 html-webpack-plugin构建时inject的标签 静态资源也有跨域问题吗？ 同域和跨域对接口和静态资源的影响
-  integrity: false, // what is this
-  // configureWebpack: {
-  //   plugin: [
-  //     new MyAwesomeWebpackPlugin()
-  //   ]
-  // }
+  integrity: true, // <script src="/pro/static/file/js/app.js" crossorigin="anonymous" integrity="sha384-T0CXHL+EaFg2W1P2f3WXCyHv55eI2f+x5WVP3/tXKcaMbs8Q/eYSr3OHNAlXGY1K"></script>  cdn文件的安全性 https://developer.mozilla.org/zh-CN/docs/Web/Security/Subresource_Integrity
+
+
+  // TODO
   configureWebpack: config => { // 配置webpack
     if (process.env.NODE_ENV === 'production') {
       
@@ -33,7 +31,30 @@ module.exports = {
   },
   chainWebpack: config => {
     
-  }
+  },
+  css: {
+    requireModuleExtension: false, // module的
+    // extract: false, // default（生产环境是true，开发环境是false）是否将css提取到一个独立的css中而不是注入到js的inline代码中
+    sourceMap: false, // 影响构建性能 true
+    loaderOptions: { // loader的选项 也可以在chainWebpack手动指定loader更推荐上面这样做
+      css: {},
+      scss: {},    
+    }
+  },
+  devServer: {
+    // 所有webpack-dev-server的选项
+    host: '',
+    port: '8080',
+    https: '' // 不应该修改publicPath和historyApiFallback
+    proxy: {
+      '/api': {
+        
+      }
+    }
+  },
+  
+
+  
   
 
 
