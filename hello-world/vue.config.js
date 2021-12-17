@@ -1,11 +1,13 @@
 const { processSlotOutlet } = require("@vue/compiler-core");
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 /*
  * @Author       : zhucaiyun1@xdf.cn
  * @Date         : 2021-11-23 14:44:59
  * @LastEditors  : zhucaiyun1@xdf.cn
- * @LastEditTime : 2021-12-03 15:32:38
+ * @LastEditTime : 2021-12-17 14:00:12
  * @Description  : vue-cli配置文件
+ * 浏览器兼容：https://www.jianshu.com/p/b3ea906d7d24
  */
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production'? '/pro/' : '/dev/', //部署应用包时的基本URL 取代了baseUrl 和webpack的output.publicPath一致
@@ -20,7 +22,6 @@ module.exports = {
   crossorigin: 'anonymous', // what is this ''|'anonymous'|'use-credentials'|undefined 只影响 html-webpack-plugin构建时inject的标签 静态资源也有跨域问题吗？ 同域和跨域对接口和静态资源的影响
   integrity: true, // <script src="/pro/static/file/js/app.js" crossorigin="anonymous" integrity="sha384-T0CXHL+EaFg2W1P2f3WXCyHv55eI2f+x5WVP3/tXKcaMbs8Q/eYSr3OHNAlXGY1K"></script>  cdn文件的安全性 https://developer.mozilla.org/zh-CN/docs/Web/Security/Subresource_Integrity
 
-
   // TODO
   configureWebpack: config => { // 配置webpack
     if (process.env.NODE_ENV === 'production') {
@@ -30,12 +31,30 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    config.module.rule('vue')
+      .use('vue-loader')
+      .tap(options => {
+        return options
+      })
+    config.module.rule('graphql')
+      .test(/\.graphql$/)
+      .use('graphql-tag/loader')
+      .loader('graphql-tag/loader')
+      .end()
     
+    config.plugins.delete('prefetch')
+    
+    // console.log(config)
+    // config.plugin('prefetch').tap(options => {
+    //   options[0].fileBlacklist = options[0].fileBlacklist || []
+    //   options[0].fileBlacklist.push(/myasyncRoute(.)+?\.js$/)
+    //   return options
+    // })
   },
   css: {
-    requireModuleExtension: false, // module的
+    requireModuleExtension: true, // module的
     // extract: false, // default（生产环境是true，开发环境是false）是否将css提取到一个独立的css中而不是注入到js的inline代码中
-    sourceMap: false, // 影响构建性能 true
+    sourceMap: true, // 影响构建性能 true
     loaderOptions: { // loader的选项 也可以在chainWebpack手动指定loader更推荐上面这样做
       css: {},
       scss: {},    
@@ -46,18 +65,12 @@ module.exports = {
     host: '',
     port: '8080',
     https: '' // 不应该修改publicPath和historyApiFallback
-    proxy: {
-      '/api': {
+    // proxy: {
+    //   '/api': {
         
-      }
-    }
+    //   }
+    // }
   },
-  
-
-  
-  
-
-
   // 多页面模式
   // pages: {
   //   index: { // page入口的名字
